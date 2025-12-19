@@ -9,7 +9,7 @@ router.post('/register', async (req, res) => {
     const {name, email, password, role} = req.body;
     
     if(!name || !email || !password) {
-        return res.status(400).json({message: "All fields are required"});
+        return res.status(400).json ({message: "All fields are required"});
     } 
     // Check if user already exists
     const checkQuery = "SELECT * FROM users WHERE email = ?";  //(?) is a placeholder to prevent SQL injection
@@ -42,5 +42,47 @@ router.post('/register', async (req, res) => {
         }
     });   
 });
+
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
+router.post('/login', (req, res) => {
+    const {email, password} = req.body;
+
+    if(!email || !password)
+        return res.status(400).json({message: "All fields are required"});
+
+    const findUserQuery = "SELECT * FROM users WHERE email = ?";
+
+    db.query(findUserQuery, [email], async (err, result) => {
+        if(err)
+            return res.status(500).json({message: "Database error"});
+
+        if(result.length === 0)
+            return res.status(401).json({message: "Email and password does not match"});
+        
+        const user = result[0];
+
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if(!isMatch)
+            return res.status(401).json({message: "Email and password does not match"});
+
+        const token = jwt.sign(
+            {
+                userId: user.id,
+                role: user.role
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        );
+
+        res.status(200).json({
+            message: "Login successful",
+            token: token
+        });
+    });
+});
+
 
 module.exports = router;
