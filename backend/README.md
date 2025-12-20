@@ -13,3 +13,8 @@
 ## Next Steps
  - User Registration API
  - Login with JWT
+
+## Authentication
+ - User registration with hashed password
+ - Login using JWT authentication
+ - Token-based stateless authentication

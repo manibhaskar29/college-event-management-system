@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const db = require('../db');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -84,5 +85,11 @@ router.post('/login', (req, res) => {
     });
 });
 
+router.get('/protected', authMiddleware, (req, res) => {
+    res.json({
+        message: "You accessed a protected route",
+        user: req.user
+    });
+});
 
 module.exports = router;
