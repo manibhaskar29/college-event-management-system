@@ -1,4 +1,3 @@
-
 try {
     const authRouted = require('./routes/authRoutes');
     console.log('Type of authRouted:', typeof authRouted);
