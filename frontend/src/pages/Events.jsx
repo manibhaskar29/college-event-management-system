@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
 import api from "../services/api"
-
+import { getUserFromToken } from "../utils/auth";
 
 export default function Events(){
     const [events, setEvents] = useState([]); // Initially events holds an empty array | Backend → data → setEvents → UI updates automatically
     const [error, setError] = useState("");
+    const user = getUserFromToken();
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -43,7 +44,12 @@ export default function Events(){
                     <p>Date: {event.event_date}</p>
                     <p>Created by: {event.created_by}</p>
 
-                    <button onClick={() => handleRegister(event.id)}>Register</button>
+                    {user?.role === "student" && (
+                        <button onClick={() => handleRegister(event.id)}>
+                            Register
+                        </button>
+                    )}
+                    
                     <hr />
                 </div>
             ))} 
