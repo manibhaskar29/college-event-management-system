@@ -6,6 +6,7 @@ import EventIcon from "@mui/icons-material/Event";
 import PersonIcon from "@mui/icons-material/Person";
 import PeopleIcon from "@mui/icons-material/People";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import api from "../services/api";
 
 export default function StudentEvents() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -19,20 +20,8 @@ export default function StudentEvents() {
 
     const fetchEvents = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:5000/api/events", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setEvents(data.events);
-            } else {
-                console.error("Failed to fetch events:", data.message);
-            }
+            const response = await api.get("/events");
+            setEvents(response.data.events);
         } catch (error) {
             console.error("Error fetching events:", error);
         } finally {
@@ -43,33 +32,18 @@ export default function StudentEvents() {
     const handleRegister = async (eventId) => {
         setRegistering(eventId);
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:5000/api/events/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({ event_id: eventId })
-            });
+            const response = await api.post("/events/register", { event_id: eventId });
+            alert("Successfully registered for the event!");
 
-            const data = await response.json();
-
-            if (response.ok) {
-                alert("Successfully registered for the event!");
-
-                // Update local state to reflect registration
-                setEvents(prevEvents => prevEvents.map(event =>
-                    event.id === eventId
-                        ? { ...event, isRegistered: true, registrations: event.registrations + 1 }
-                        : event
-                ));
-            } else {
-                alert(data.message || "Failed to register for event");
-            }
+            // Update local state to reflect registration
+            setEvents(prevEvents => prevEvents.map(event =>
+                event.id === eventId
+                    ? { ...event, isRegistered: true, registrations: event.registrations + 1 }
+                    : event
+            ));
         } catch (error) {
             console.error("Registration error:", error);
-            alert("An error occurred while registering for the event");
+            alert(error.response?.data?.message || "An error occurred while registering for the event");
         } finally {
             setRegistering(null);
         }

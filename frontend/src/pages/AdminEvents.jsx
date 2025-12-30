@@ -6,6 +6,7 @@ import EventIcon from "@mui/icons-material/Event";
 import PeopleIcon from "@mui/icons-material/People";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import api from "../services/api";
 
 export default function AdminEvents() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -25,20 +26,8 @@ export default function AdminEvents() {
 
     const fetchEvents = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:5000/api/events", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setEvents(data.events);
-            } else {
-                console.error("Failed to fetch events:", data.message);
-            }
+            const response = await api.get("/events");
+            setEvents(response.data.events);
         } catch (error) {
             console.error("Error fetching events:", error);
         } finally {
@@ -53,25 +42,12 @@ export default function AdminEvents() {
 
     const handleDeleteConfirm = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:5000/api/events/${eventToDelete.id}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                alert("Event deleted successfully!");
-                fetchEvents(); // Refresh the list
-            } else {
-                alert(data.message || "Failed to delete event");
-            }
+            await api.delete(`/events/${eventToDelete.id}`);
+            alert("Event deleted successfully!");
+            fetchEvents(); // Refresh the list
         } catch (error) {
             console.error("Delete error:", error);
-            alert("An error occurred while deleting the event");
+            alert(error.response?.data?.message || "An error occurred while deleting the event");
         } finally {
             setDeleteDialogOpen(false);
             setEventToDelete(null);
@@ -91,31 +67,16 @@ export default function AdminEvents() {
 
     const handleEditSave = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:5000/api/events/${eventToEdit.id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    title: editTitle,
-                    description: editDescription,
-                    event_date: editDate
-                })
+            await api.put(`/events/${eventToEdit.id}`, {
+                title: editTitle,
+                description: editDescription,
+                event_date: editDate
             });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                alert("Event updated successfully!");
-                fetchEvents(); // Refresh the list
-            } else {
-                alert(data.message || "Failed to update event");
-            }
+            alert("Event updated successfully!");
+            fetchEvents(); // Refresh the list
         } catch (error) {
             console.error("Update error:", error);
-            alert("An error occurred while updating the event");
+            alert(error.response?.data?.message || "An error occurred while updating the event");
         } finally {
             setEditDialogOpen(false);
             setEventToEdit(null);

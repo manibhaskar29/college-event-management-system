@@ -5,6 +5,7 @@ import EventIcon from "@mui/icons-material/Event";
 import PersonIcon from "@mui/icons-material/Person";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import api from "../services/api";
 
 export default function MyRegistrations() {
     const [registrations, setRegistrations] = useState([]);
@@ -16,20 +17,8 @@ export default function MyRegistrations() {
 
     const fetchRegistrations = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:5000/api/events/my-registrations", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setRegistrations(data.registrations);
-            } else {
-                console.error("Failed to fetch registrations:", data.message);
-            }
+            const response = await api.get("/events/my-registrations");
+            setRegistrations(response.data.registrations);
         } catch (error) {
             console.error("Error fetching registrations:", error);
         } finally {

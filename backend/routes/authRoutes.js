@@ -12,6 +12,13 @@ router.post('/register', async (req, res) => {
     if (!name || !email || !password) {
         return res.status(400).json({ message: "All fields are required" });
     }
+
+    // SECURITY: Prevent admin registration via public API
+    // Admin accounts must be created manually via database or protected endpoint
+    if (role && role.toLowerCase() === 'admin') {
+        return res.status(403).json({ message: "Admin registration not allowed. Please contact system administrator." });
+    }
+
     // Check if user already exists
     const checkQuery = "SELECT * FROM users WHERE email = ?";  //(?) is a placeholder to prevent SQL injection
     db.query(checkQuery, [email], async (err, result) => {
@@ -30,7 +37,7 @@ router.post('/register', async (req, res) => {
 
             db.query(
                 insertQuery,
-                [name, email, hashedPassword, role || "student"],
+                [name, email, hashedPassword, "student"], // Force student role for all public registrations
                 (err) => {
                     if (err) {
                         return res.status(500).json({ message: "Failed to register user" });

@@ -13,7 +13,6 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("student");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
@@ -31,7 +30,7 @@ export default function Register() {
         name,
         email,
         password,
-        role,
+        role: "student", // All public registrations are students only
       });
 
       alert("Registration successful");
@@ -306,75 +305,6 @@ export default function Register() {
                 },
               }}
             />
-          </Box>
-
-          {/* Role Selector */}
-          <Box sx={{ mb: 3 }}>
-            <Typography sx={{ mb: 1.5, fontWeight: 600, color: "#334155", fontSize: 13 }}>
-              I am a...
-            </Typography>
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Button
-                fullWidth
-                variant={role === "student" ? "contained" : "outlined"}
-                onClick={() => setRole("student")}
-                sx={{
-                  py: 1.2,
-                  borderRadius: 2,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  fontSize: 14,
-                  ...(role === "student"
-                    ? {
-                      background: "#3b82f6",
-                      color: "#fff",
-                      "&:hover": {
-                        background: "#2563eb",
-                      },
-                    }
-                    : {
-                      borderColor: "#e2e8f0",
-                      color: "#64748b",
-                      "&:hover": {
-                        borderColor: "#3b82f6",
-                        background: "#f8fafc",
-                      },
-                    }),
-                }}
-              >
-                Student
-              </Button>
-              <Button
-                fullWidth
-                variant={role === "admin" ? "contained" : "outlined"}
-                onClick={() => setRole("admin")}
-                sx={{
-                  py: 1.2,
-                  borderRadius: 2,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  fontSize: 14,
-                  ...(role === "admin"
-                    ? {
-                      background: "#3b82f6",
-                      color: "#fff",
-                      "&:hover": {
-                        background: "#2563eb",
-                      },
-                    }
-                    : {
-                      borderColor: "#e2e8f0",
-                      color: "#64748b",
-                      "&:hover": {
-                        borderColor: "#3b82f6",
-                        background: "#f8fafc",
-                      },
-                    }),
-                }}
-              >
-                Admin
-              </Button>
-            </Box>
           </Box>
 
           {/* Submit Button */}
