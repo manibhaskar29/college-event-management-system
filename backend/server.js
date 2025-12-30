@@ -7,11 +7,25 @@ const eventRoutes = require('./routes/eventRoutes');
 const app = express();
 
 // CORS configuration - allows both local and production frontend
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://college-event-management-system-wheat.vercel.app',
+    'https://college-event-management-system.vercel.app',
+    process.env.FRONTEND_URL // Add your Vercel URL as env variable
+].filter(Boolean); // Remove undefined values
+
 app.use(cors({
-    origin: [
-        'http://localhost:5173',
-        'https://college-event-management-system-wheat.vercel.app' // Update with your actual Vercel URL
-    ],
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.log('Blocked by CORS:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 app.use(express.json());
