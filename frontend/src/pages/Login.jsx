@@ -1,150 +1,287 @@
 import { useState } from "react";
-import {
-  Box,
-  Grid,
-  TextField,
-  Button,
-  Typography,
-  Paper,
-  Checkbox,
-  FormControlLabel,
-  Divider,
-} from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import GoogleIcon from "@mui/icons-material/Google";
+import { Box, TextField, Button, Typography, Link, Paper, IconButton, InputAdornment } from "@mui/material";
+import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PersonIcon from "@mui/icons-material/Person";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { getUserFromToken } from "../utils/auth";
+
 
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await api.post("/auth/login", { email, password });
+
+      // save token
       localStorage.setItem("token", res.data.token);
-      alert("Login successful");
+
+      // decode user
+      const user = getUserFromToken();
+
+      // role-based redirect
+      if (user.role === "admin") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/student-dashboard");
+      }
+
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
   };
 
+
   return (
-    <Grid container sx={{ minHeight: "100vh", bgcolor: "#0b1220" }}>
-      {/* LEFT SIDE */}
-      <Grid
-        item
-        xs={12}
-        md={6}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        py: 4,
+      }}
+    >
+      <Paper
+        elevation={3}
         sx={{
-          color: "#fff",
-          p: 6,
-          display: { xs: "none", md: "flex" },
-          flexDirection: "column",
-          justifyContent: "center",
+          width: "100%",
+          maxWidth: 420,
+          mx: 2,
+          p: 4,
+          borderRadius: 3,
+          background: "#fff",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)",
         }}
       >
-        <Typography variant="h4" gutterBottom>
-          College Event Dashboard
-        </Typography>
-
-        <Typography sx={{ mb: 4, color: "#cbd5e1" }}>
-          Manage and participate in college events with ease.
-        </Typography>
-
-        {[
-          "Create and manage events",
-          "Student event registration",
-          "Role-based access control",
-          "Secure JWT authentication",
-        ].map((text) => (
-          <Box key={text} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-            <CheckCircleIcon sx={{ mr: 1, color: "#38bdf8" }} />
-            <Typography>{text}</Typography>
-          </Box>
-        ))}
-      </Grid>
-
-      {/* RIGHT SIDE */}
-      <Grid
-        item
-        xs={12}
-        md={6}
-        component={Paper}
-        elevation={6}
-        sx={{
-          bgcolor: "#020617",
-          color: "#fff",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Box sx={{ width: "100%", maxWidth: 400, p: 4 }}>
-          <Typography variant="h5" gutterBottom>
-            Sign in
-          </Typography>
-
-          {error && (
-            <Typography color="error" sx={{ mb: 2 }}>
-              {error}
-            </Typography>
-          )}
-
-          <Box component="form" onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Email"
-              margin="normal"
-              variant="outlined"
-              InputLabelProps={{ style: { color: "#94a3b8" } }}
-              InputProps={{ style: { color: "#fff" } }}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              helperText="Enter your registered email"
-            />
-
-            <TextField
-              fullWidth
-              label="Password"
-              type="password"
-              margin="normal"
-              variant="outlined"
-              InputLabelProps={{ style: { color: "#94a3b8" } }}
-              InputProps={{ style: { color: "#fff" } }}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              helperText="Minimum 6 characters"
-            />
-
-            <FormControlLabel
-              control={<Checkbox sx={{ color: "#38bdf8" }} />}
-              label="Remember me"
-            />
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 2, mb: 2 }}
-            >
-              Sign in
-            </Button>
-
-            <Divider sx={{ my: 2, color: "#475569" }}>or</Divider>
-
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<GoogleIcon />}
-              disabled
-            >
-              Sign in with Google (Coming soon)
-            </Button>
+        {/* Icon */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            mb: 3,
+          }}
+        >
+          <Box
+            sx={{
+              width: 64,
+              height: 64,
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <PersonIcon sx={{ fontSize: 32, color: "#fff" }} />
           </Box>
         </Box>
-      </Grid>
-    </Grid>
+
+        {/* Header */}
+        <Box sx={{ textAlign: "center", mb: 3 }}>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 700,
+              color: "#1e293b",
+              mb: 0.5,
+            }}
+          >
+            Welcome Back
+          </Typography>
+          <Typography sx={{ color: "#64748b", fontSize: 14 }}>
+            Sign in to your account
+          </Typography>
+        </Box>
+
+        {/* Error Message */}
+        {error && (
+          <Box
+            sx={{
+              mb: 3,
+              p: 2,
+              borderRadius: 2,
+              background: "#fef2f2",
+              border: "1px solid #fecaca",
+            }}
+          >
+            <Typography sx={{ color: "#dc2626", fontSize: 14 }}>
+              {error}
+            </Typography>
+          </Box>
+        )}
+
+        {/* Form */}
+        <Box component="form" onSubmit={handleSubmit}>
+          {/* Email Address */}
+          <Box sx={{ mb: 2.5 }}>
+            <Typography sx={{ mb: 1, fontWeight: 600, color: "#334155", fontSize: 13 }}>
+              Email Address
+            </Typography>
+            <TextField
+              fullWidth
+              placeholder="your.email@college.edu"
+              type="email"
+              required
+              InputProps={{
+                startAdornment: <EmailOutlinedIcon sx={{ mr: 1.5, color: "#94a3b8", fontSize: 20 }} />,
+              }}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                  backgroundColor: "#f8fafc",
+                  "& fieldset": {
+                    borderColor: "#e2e8f0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#3b82f6",
+                  },
+                  "&.Mui-focused": {
+                    backgroundColor: "#fff",
+                    "& fieldset": {
+                      borderColor: "#3b82f6",
+                      borderWidth: "2px",
+                    },
+                  },
+                },
+                "& .MuiOutlinedInput-input": {
+                  padding: "12px 14px",
+                  fontSize: 14,
+                },
+              }}
+            />
+          </Box>
+
+          {/* Password */}
+          <Box sx={{ mb: 2 }}>
+            <Typography sx={{ mb: 1, fontWeight: 600, color: "#334155", fontSize: 13 }}>
+              Password
+            </Typography>
+            <TextField
+              fullWidth
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              required
+              InputProps={{
+                startAdornment: <LockOutlinedIcon sx={{ mr: 1.5, color: "#94a3b8", fontSize: 20 }} />,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      edge="end"
+                      sx={{ color: "#94a3b8" }}
+                    >
+                      {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                  backgroundColor: "#f8fafc",
+                  "& fieldset": {
+                    borderColor: "#e2e8f0",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#3b82f6",
+                  },
+                  "&.Mui-focused": {
+                    backgroundColor: "#fff",
+                    "& fieldset": {
+                      borderColor: "#3b82f6",
+                      borderWidth: "2px",
+                    },
+                  },
+                },
+                "& .MuiOutlinedInput-input": {
+                  padding: "12px 14px",
+                  fontSize: 14,
+                },
+              }}
+            />
+          </Box>
+
+          {/* Forgot Password Link */}
+          <Box sx={{ textAlign: "right", mb: 3 }}>
+            <Link
+              href="#"
+              underline="hover"
+              sx={{
+                fontSize: 13,
+                color: "#3b82f6",
+                fontWeight: 600,
+                "&:hover": {
+                  color: "#2563eb",
+                },
+              }}
+            >
+              Forgot password?
+            </Link>
+          </Box>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{
+              py: 1.5,
+              borderRadius: 2,
+              background: "#3b82f6",
+              fontSize: 15,
+              fontWeight: 600,
+              textTransform: "none",
+              boxShadow: "0 4px 12px rgba(59, 130, 246, 0.3)",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                background: "#2563eb",
+                boxShadow: "0 6px 16px rgba(59, 130, 246, 0.4)",
+                transform: "translateY(-1px)",
+              },
+              "&:active": {
+                transform: "translateY(0)",
+              },
+            }}
+          >
+            Sign In
+          </Button>
+        </Box>
+
+        {/* Create Account Link */}
+        <Box sx={{ mt: 3, textAlign: "center" }}>
+          <Typography sx={{ color: "#64748b", fontSize: 14 }}>
+            Don't have an account?{" "}
+            <Link
+              href="/register"
+              underline="hover"
+              sx={{
+                color: "#3b82f6",
+                fontWeight: 600,
+                "&:hover": {
+                  color: "#2563eb",
+                },
+              }}
+            >
+              Create account
+            </Link>
+          </Typography>
+        </Box>
+      </Paper>
+    </Box>
   );
 }
