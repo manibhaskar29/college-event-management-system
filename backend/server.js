@@ -6,14 +6,17 @@ const eventRoutes = require("./routes/eventRoutes");
 
 const app = express();
 
-// CORS configuration
+// CORS configuration - explicitly allow frontend origins
 app.use(
     cors({
         origin: [
             "http://localhost:5173",
+            "https://college-event-management-system-b6j5rxs7p.vercel.app",
             process.env.FRONTEND_URL
-        ],
-        credentials: true
+        ].filter(Boolean), // Remove undefined values
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization']
     })
 );
 
