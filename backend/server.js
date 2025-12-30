@@ -6,7 +6,14 @@ const eventRoutes = require('./routes/eventRoutes');
 
 const app = express();
 
-app.use(cors());
+// CORS configuration - allows both local and production frontend
+app.use(cors({
+    origin: [
+        'http://localhost:5173',
+        'https://college-event-management-system-wheat.vercel.app' // Update with your actual Vercel URL
+    ],
+    credentials: true
+}));
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
@@ -16,7 +23,7 @@ app.get('/', (req, res) => {
     res.send("server is running + DB Connected");
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
