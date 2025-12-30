@@ -59,8 +59,16 @@ Registrations
 2. Install dependencies
     - npm install
 
-3. Create a .env file
-   - JWT_SECRET=your_secret_key
+3. Create a .env file with the following variables:
+   ```
+   JWT_SECRET=your_secret_key
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_USER=root
+   DB_PASSWORD=your_mysql_password
+   DB_NAME=college_events
+   FRONTEND_URL=http://localhost:5173
+   ```
 
 4. Setup MySQL database and tables
 

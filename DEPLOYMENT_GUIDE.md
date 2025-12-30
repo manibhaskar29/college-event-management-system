@@ -324,23 +324,6 @@ mysql -h your-host -u your-user -p your-database < college_events_backup.sql
 
 ---
 
-## 10. Post-Deployment Checklist
-
-- [ ] GitHub repository created and code pushed
-- [ ] Database hosted and accessible
-- [ ] Backend deployed and running
-- [ ] Frontend deployed and accessible
-- [ ] Environment variables configured
-- [ ] CORS settings updated
-- [ ] Database migrated
-- [ ] Test login functionality
-- [ ] Test event creation
-- [ ] Test event registration
-- [ ] Test admin dashboard
-- [ ] Test student dashboard
-
----
-
 ## Need Help?
 
 If you encounter issues:

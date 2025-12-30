@@ -14,7 +14,6 @@ router.post('/register', async (req, res) => {
     }
 
     // SECURITY: Prevent admin registration via public API
-    // Admin accounts must be created manually via database or protected endpoint
     if (role && role.toLowerCase() === 'admin') {
         return res.status(403).json({ message: "Admin registration not allowed. Please contact system administrator." });
     }
@@ -91,29 +90,5 @@ router.post('/login', (req, res) => {
         });
     });
 });
-
-router.get('/protected', authMiddleware, (req, res) => {
-    res.json({
-        message: "You accessed a protected route",
-        user: req.user
-    });
-});
-
-// DELETE user by ID
-
-// const adminOnly = (req, res, next) => {
-//     if (req.user.role !== "admin")
-//         return res.status(403).json({ message: "Admin access only" });
-//     next();
-// };
-
-// router.delete("/users/:id", authMiddleware, adminOnly, async (req, res) => {
-//     const { id } = req.params;
-
-//     await db.query("DELETE FROM users WHERE id = ?", [id]);
-
-//     res.json({ message: "User deleted successfully" });
-// });
-
 
 module.exports = router;
