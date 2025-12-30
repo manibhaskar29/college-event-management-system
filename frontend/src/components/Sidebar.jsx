@@ -49,7 +49,7 @@ export default function Sidebar() {
                 top: 0,
             }}
         >
-            {/* Logo */}
+            {/* Logo/Brand */}
             <Box
                 sx={{
                     p: 3,
