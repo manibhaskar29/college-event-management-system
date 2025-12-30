@@ -160,7 +160,21 @@ git push -u origin main
    VITE_API_URL=https://your-backend-url.onrender.com/api
    ```
 
-4. **Deploy**: Click "Deploy"
+4. **IMPORTANT - Create vercel.json**:
+   - Create `frontend/vercel.json` with the following content:
+   ```json
+   {
+     "rewrites": [
+       {
+         "source": "/(.*)",
+         "destination": "/index.html"
+       }
+     ]
+   }
+   ```
+   - This ensures all routes are handled by React Router (fixes 404 errors on page refresh/direct navigation)
+
+5. **Deploy**: Click "Deploy"
 
 ### Option B: Netlify
 
