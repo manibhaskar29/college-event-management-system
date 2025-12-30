@@ -6,11 +6,7 @@ const eventRoutes = require("./routes/eventRoutes");
 
 const app = express();
 
-/**
- * CORS configuration
- * Explicitly allow frontend origins
- * Handle preflight requests
- */
+// CORS configuration
 app.use(
     cors({
         origin: [
@@ -20,9 +16,6 @@ app.use(
         credentials: true
     })
 );
-
-// Handle preflight requests explicitly
-app.options("*", cors());
 
 app.use(express.json());
 
